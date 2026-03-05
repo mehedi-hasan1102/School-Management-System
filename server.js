@@ -1206,7 +1206,7 @@ async function startServer() {
         console.log('🔄 Initializing Database...');
         await initializeDatabase();
 
-        sequelize = new Sequelize(
+        const db = new Sequelize(
             process.env.DB_NAME || 'school_system',
             process.env.DB_USER || 'root',
             process.env.DB_PASSWORD || '',
@@ -1217,24 +1217,26 @@ async function startServer() {
             }
         );
 
-        defineModels(sequelize);
-        defineTeacherModel(sequelize);
-        defineStaffModel(sequelize);
-        defineNoticeModel(sequelize);
-        defineBannerModel(sequelize);
-        defineClassModel(sequelize);
-        defineBillModel(sequelize);
-        defineTeacherSalaryModel(sequelize);
-        defineTeacherAttendanceModel(sequelize);
-        defineSettingModel(sequelize);
+        defineModels(db);
+        defineTeacherModel(db);
+        defineStaffModel(db);
+        defineNoticeModel(db);
+        defineBannerModel(db);
+        defineClassModel(db);
+        defineBillModel(db);
+        defineTeacherSalaryModel(db);
+        defineTeacherAttendanceModel(db);
+        defineSettingModel(db);
 
-        await sequelize.sync();
-        await ensureStudentExtraColumns(sequelize);
-        await ensureTeacherExtraColumns(sequelize);
-        await ensureTeacherSalaryExtraColumns(sequelize);
-        await ensureStaffExtraColumns(sequelize);
+        await db.sync();
+        await ensureStudentExtraColumns(db);
+        await ensureTeacherExtraColumns(db);
+        await ensureTeacherSalaryExtraColumns(db);
+        await ensureStaffExtraColumns(db);
+        sequelize = db;
         console.log('\x1b[32m✔\x1b[0m Database Synced Successfully');
     } catch (err) {
+        sequelize = null;
         console.error('\x1b[31m✘\x1b[0m Database Connection Error:', err.message);
         console.log('ℹ️  Ensure MySQL is running and credentials in .env are correct.');
     }
